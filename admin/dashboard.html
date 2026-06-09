@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Dashboard - Skylimit Computers</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 250px;
+            background: var(--dark-bg);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-sidebar h2 {
+            margin-bottom: 2rem;
+            font-size: 1.3rem;
+        }
+
+        .admin-menu {
+            list-style: none;
+        }
+
+        .admin-menu li {
+            margin-bottom: 1rem;
+        }
+
+        .admin-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem;
+            display: block;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-menu a:hover,
+        .admin-menu a.active {
+            background: var(--primary-color);
+            padding-left: 1.5rem;
+        }
+
+        .admin-main {
+            margin-left: 250px;
+            flex: 1;
+            background: var(--light-bg);
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h1 {
+            color: var(--primary-color);
+        }
+
+        .admin-content {
+            padding: 2rem;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .panel-section {
+            display: none;
+        }
+
+        .panel-section.active {
+            display: block;
+        }
+
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .form-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: #0052a3;
+            transform: translateY(-2px);
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .products-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .products-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .products-table tr:hover {
+            background: var(--light-bg);
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #0066cc;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #0052a3;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            margin-top: 1rem;
+            border-radius: 5px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .products-table {
+                font-size: 0.9rem;
+            }
+
+            .products-table td,
+            .products-table th {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <h2><i class="fas fa-cogs"></i> Admin Panel</h2>
+            <ul class="admin-menu">
+                <li><a href="#" onclick="showSection('dashboard')" class="menu-link active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="#" onclick="showSection('products')" class="menu-link"><i class="fas fa-box"></i> Manage Products</a></li>
+                <li><a href="#" onclick="showSection('add-product')" class="menu-link"><i class="fas fa-plus-circle"></i> Add Product</a></li>
+                <li><a href="#" onclick="showSection('password')" class="menu-link"><i class="fas fa-key"></i> Change Password</a></li>
+                <li><a href="#" onclick="logout()" class="menu-link" style="color: #dc3545;"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <h1>Skylimit Computers - Admin Dashboard</h1>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="panel-section active">
+                    <div class="form-card">
+                        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                        <p>Welcome to Skylimit Computers Admin Panel!</p>
+                        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 2rem; color: var(--primary-color); font-weight: bold;" id="totalProducts">0</div>
+                                <p>Total Products</p>
+                            </div>
+                            <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 2rem; color: var(--primary-color); font-weight: bold;" id="totalStock">0</div>
+                                <p>Total Stock</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Product Section -->
+                <div id="add-product" class="panel-section">
+                    <div class="form-card">
+                        <h2><i class="fas fa-plus-circle"></i> Add New Product</h2>
+                        <div id="addMessage" class="message"></div>
+                        <form id="addProductForm">
+                            <div class="two-columns">
+                                <div class="form-group">
+                                    <label for="productName">Product Name *</label>
+                                    <input type="text" id="productName" required placeholder="e.g., Lenovo IdeaPad 3">
+                                </div>
+                                <div class="form-group">
+                                    <label for="productCategory">Category *</label>
+                                    <select id="productCategory" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Laptops">Laptops</option>
+                                        <option value="Desktops">Desktops</option>
+                                        <option value="Hardware">Hardware</option>
+                                        <option value="Accessories">Accessories</option>
+                                        <option value="Printers">Printers</option>
+                                        <option value="Software">Software</option>
+                                        <option value="POS Equipment">POS Equipment</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="two-columns">
+                                <div class="form-group">
+                                    <label for="productPrice">Price (₪) *</label>
+                                    <input type="number" id="productPrice" required placeholder="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="productStock">Stock Quantity *</label>
+                                    <input type="number" id="productStock" required placeholder="0" min="0">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productDescription">Description *</label>
+                                <textarea id="productDescription" required placeholder="Enter product description"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productImage">Product Image URL *</label>
+                                <input type="url" id="productImage" required placeholder="https://example.com/image.jpg">
+                                <small>Enter a valid image URL. Use unsplash.com for free product images</small>
+                                <img id="imagePreview" class="image-preview" style="display: none;">
+                            </div>
+
+                            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Add Product</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Manage Products Section -->
+                <div id="products" class="panel-section">
+                    <div class="form-card">
+                        <h2><i class="fas fa-box"></i> Manage Products</h2>
+                        <div id="productsMessage" class="message"></div>
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Change Password Section -->
+                <div id="password" class="panel-section">
+                    <div class="form-card">
+                        <h2><i class="fas fa-key"></i> Change Password</h2>
+                        <div id="passwordMessage" class="message"></div>
+                        <form id="passwordForm">
+                            <div class="form-group">
+                                <label for="currentPassword">Current Password *</label>
+                                <input type="password" id="currentPassword" required placeholder="Enter current password">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword">New Password *</label>
+                                <input type="password" id="newPassword" required placeholder="Enter new password" minlength="6">
+                                <small>Password must be at least 6 characters</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm New Password *</label>
+                                <input type="password" id="confirmPassword" required placeholder="Confirm new password">
+                            </div>
+
+                            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Change Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin is logged in
+        function checkAdminAccess() {
+            if (localStorage.getItem('adminLoggedIn') !== 'true') {
+                window.location.href = 'login.html';
+            }
+        }
+
+        checkAdminAccess();
+
+        // Show section
+        function showSection(sectionId) {
+            document.querySelectorAll('.panel-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('.menu-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (sectionId === 'products') {
+                loadProducts();
+            }
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('adminUsername');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Show message
+        function showMessage(elementId, message, type) {
+            const msgEl = document.getElementById(elementId);
+            msgEl.textContent = message;
+            msgEl.className = `message ${type}`;
+            msgEl.style.display = 'block';
+            setTimeout(() => {
+                msgEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Add product form
+        document.getElementById('addProductForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const product = {
+                id: Date.now(),
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                price: document.getElementById('productPrice').value,
+                stock: document.getElementById('productStock').value,
+                description: document.getElementById('productDescription').value,
+                image: document.getElementById('productImage').value
+            };
+
+            let products = JSON.parse(localStorage.getItem('skylimitProducts')) || [];
+            products.push(product);
+            localStorage.setItem('skylimitProducts', JSON.stringify(products));
+
+            showMessage('addMessage', '✓ Product added successfully!', 'success');
+            document.getElementById('addProductForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+
+            // Update dashboard
+            updateDashboard();
+        });
+
+        // Load products
+        function loadProducts() {
+            const products = JSON.parse(localStorage.getItem('skylimitProducts')) || [];
+            const tbody = document.getElementById('productsTableBody');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>₪${product.price}</td>
+                    <td>${product.stock}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editProduct(${product.id})"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn-delete" onclick="deleteProduct(${product.id})"><i class="fas fa-trash"></i> Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No products added yet</td></tr>';
+            }
+        }
+
+        // Delete product
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                let products = JSON.parse(localStorage.getItem('skylimitProducts')) || [];
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('skylimitProducts', JSON.stringify(products));
+                showMessage('productsMessage', '✓ Product deleted successfully!', 'success');
+                loadProducts();
+                updateDashboard();
+            }
+        }
+
+        // Edit product (simple version)
+        function editProduct(id) {
+            alert('Edit functionality coming soon! For now, please delete and add again.');
+        }
+
+        // Update dashboard stats
+        function updateDashboard() {
+            const products = JSON.parse(localStorage.getItem('skylimitProducts')) || [];
+            let totalStock = 0;
+            products.forEach(p => {
+                totalStock += parseInt(p.stock) || 0;
+            });
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalStock').textContent = totalStock;
+        }
+
+        // Image preview
+        document.getElementById('productImage').addEventListener('change', function() {
+            const preview = document.getElementById('imagePreview');
+            preview.src = this.value;
+            preview.style.display = 'block';
+            preview.onerror = () => {
+                preview.style.display = 'none';
+            };
+        });
+
+        // Password change form
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confirm) {
+                showMessage('passwordMessage', '✗ Passwords do not match!', 'error');
+                return;
+            }
+
+            // This is simplified - in production use proper backend authentication
+            const currentHash = await hashPassword(current);
+            const correctHash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // SHA256 of 'admin'
+
+            if (currentHash === correctHash) {
+                // Save new password (in production, send to backend)
+                localStorage.setItem('adminNewPasswordHash', await hashPassword(newPass));
+                showMessage('passwordMessage', '✓ Password changed successfully!', 'success');
+                document.getElementById('passwordForm').reset();
+            } else {
+                showMessage('passwordMessage', '✗ Current password is incorrect!', 'error');
+            }
+        });
+
+        // SHA256 hash function
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Initialize dashboard
+        updateDashboard();
+    </script>
+</body>
+</html>
